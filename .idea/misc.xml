@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/circle.xml" value="0.3235" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/ic__delete.xml" value="0.3235" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/ic_alarm.xml" value="0.3235" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/ic_calendar.xml" value="0.3235" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/ic_more.xml" value="0.3235" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/ic_plus.xml" value="0.2465" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/drawable/ic_plus_white.xml" value="0.3235" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/activity_main.xml" value="0.24225352112676057" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/category_item.xml" value="0.33" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/edit_dialog.xml" value="0.3175213675213675" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/fdd.xml" value="0.30854700854700856" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/fragment_add_task.xml" value="0.3175213675213675" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/fragment_home.xml" value="0.2915082382762991" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/fragment_to_do.xml" value="0.3175213675213675" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/popup.xml" value="0.30854700854700856" />
+        <entry key="..\:/anp/Todoappmvc/app/src/main/res/layout/task_item.xml" value="0.33" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

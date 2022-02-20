@@ -1,0 +1,100 @@
+package com.example.todoapp_mvc.adapters
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import com.example.todoapp_mvc.R
+import com.example.todoapp_mvc.controller.Controller
+import com.example.todoapp_mvc.databinding.CategoryItemBinding
+import com.example.todoapp_mvc.local.database.AppDatabaseBuilder
+import com.example.todoapp_mvc.local.database.DatabaseHelperImpl
+import com.example.todoapp_mvc.local.entity.Category
+import com.example.todoapp_mvc.utils.ViewmodelFactory
+import kotlinx.coroutines.DelicateCoroutinesApi
+
+
+class CategoryAdapter(
+    var context: Context,
+    var tascount:ArrayList<Int>,
+    var viewowner: Fragment,
+    val list: List<Category>,
+    var isTask: Boolean = false,
+    var onpress: onPress
+) :
+    RecyclerView.Adapter<CategoryAdapter.Vh>() {
+    var oldItem = -1
+    var itemViewList = ArrayList<CategoryItemBinding>()
+    lateinit var viewModel: Controller
+
+    inner class Vh(var itemview: CategoryItemBinding) : RecyclerView.ViewHolder(itemview.root) {
+        @OptIn(DelicateCoroutinesApi::class)
+        @SuppressLint("ResourceAsColor", "NotifyDataSetChanged", "SetTextI18n")
+        fun bind(category: Category, position: Int) {
+//            setupViewModel()
+
+
+            itemview.categoryTask.text = "${tascount[position]} task"
+
+
+            if (category.category_color == R.color.yellow || category.category_color == R.color.light_grey) {
+                itemview.categoryName.setTextColor(R.color.grey)
+                itemview.categoryTask.setTextColor(R.color.grey)
+            }
+            itemview.categoryName.text = category.category_name
+            itemview.ln.setBackgroundColor(
+                context.resources.getColor(category.category_color!!)
+            )
+            itemview.container.setOnClickListener {
+                onpress.click(category)
+                if (isTask) {
+                    if (oldItem < 0) {
+                        itemview.categorySelect.visibility = View.VISIBLE
+                    } else {
+                        itemViewList[oldItem].categorySelect.visibility = View.INVISIBLE
+                        itemViewList[position].categorySelect.visibility = View.VISIBLE
+                    }
+                    onpress.selected(position, oldItem, itemViewList, itemview, category)
+                    oldItem = position
+                }
+            }
+        }
+    }
+
+//    private fun setupViewModel() {
+//        viewModel = ViewModelProvider(
+//            viewowner,
+//            ViewmodelFactory(DatabaseHelperImpl(AppDatabaseBuilder.getInstance(context)))
+//        )[Controller::class.java]
+//    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Vh {
+        var vh = Vh(CategoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        itemViewList.add(vh.itemview)
+        return vh
+    }
+
+    override fun onBindViewHolder(holder: Vh, position: Int) {
+        holder.bind(list[position], position)
+
+    }
+
+    override fun getItemCount(): Int = list.size
+
+    interface onPress {
+        fun selected(
+            position: Int,
+            oldItem: Int,
+            list: ArrayList<CategoryItemBinding>,
+            itemview: CategoryItemBinding,
+            category: Category
+        )
+
+        fun click(category: Category)
+    }
+
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.App" parent="ThemeOverlay.Material3.MaterialTimePicker">
+        ...
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorOnPrimary">@color/red</item>
+    </style>
+</resources>
