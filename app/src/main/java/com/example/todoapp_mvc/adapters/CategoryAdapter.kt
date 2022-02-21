@@ -6,21 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp_mvc.R
 import com.example.todoapp_mvc.controller.Controller
 import com.example.todoapp_mvc.databinding.CategoryItemBinding
-import com.example.todoapp_mvc.local.database.AppDatabaseBuilder
-import com.example.todoapp_mvc.local.database.DatabaseHelperImpl
 import com.example.todoapp_mvc.local.entity.Category
-import com.example.todoapp_mvc.utils.ViewmodelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 
 class CategoryAdapter(
     var context: Context,
-    var tascount:ArrayList<Int>,
+    var tascount: ArrayList<Int>,
     var viewowner: Fragment,
     val list: List<Category>,
     var isTask: Boolean = false,
@@ -50,7 +46,6 @@ class CategoryAdapter(
                 context.resources.getColor(category.category_color!!)
             )
             itemview.container.setOnClickListener {
-                onpress.click(category)
                 if (isTask) {
                     if (oldItem < 0) {
                         itemview.categorySelect.visibility = View.VISIBLE
@@ -60,6 +55,8 @@ class CategoryAdapter(
                     }
                     onpress.selected(position, oldItem, itemViewList, itemview, category)
                     oldItem = position
+                } else {
+                    onpress.click(category)
                 }
             }
         }

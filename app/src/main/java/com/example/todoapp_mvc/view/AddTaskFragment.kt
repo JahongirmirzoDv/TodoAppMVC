@@ -1,18 +1,23 @@
 package com.example.todoapp_mvc.view
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.todoapp_mvc.R
 import com.example.todoapp_mvc.adapters.CategoryAdapter
+import com.example.todoapp_mvc.controller.AlarmController
 import com.example.todoapp_mvc.controller.Controller
 import com.example.todoapp_mvc.databinding.CategoryItemBinding
 import com.example.todoapp_mvc.databinding.FragmentAddTaskBinding
@@ -20,10 +25,8 @@ import com.example.todoapp_mvc.local.database.AppDatabaseBuilder
 import com.example.todoapp_mvc.local.database.DatabaseHelperImpl
 import com.example.todoapp_mvc.local.entity.Category
 import com.example.todoapp_mvc.local.entity.TaskData
+import com.example.todoapp_mvc.utils.SharedPref
 import com.example.todoapp_mvc.utils.ViewmodelFactory
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -54,7 +57,11 @@ class AddTaskFragment : Fragment() {
     lateinit var viewModel: Controller
     lateinit var mContext: Context
     private val TAG = "AddTaskFragment"
+    private lateinit var alarmController: AlarmController
+    private lateinit var dd: String
 
+
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +70,7 @@ class AddTaskFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentAddTaskBinding.inflate(inflater, container, false)
         setupViewModel()
+        alarmController = AlarmController(requireContext())
         try {
             workUI()
         } catch (e: Exception) {
@@ -72,6 +80,7 @@ class AddTaskFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("NotifyDataSetChanged", "SimpleDateFormat")
     private fun workUI() {
         var date = ""
@@ -141,41 +150,33 @@ class AddTaskFragment : Fragment() {
             binding.calendar.setOnClickListener {
                 val df = SimpleDateFormat("MM/dd/yyyy", Locale.US)
                 val date1 = df.format(Calendar.getInstance().time)
-                val dateRangePicker =
-                    MaterialDatePicker.Builder.datePicker()
-                        .setTheme(R.style.Theme_App)
-                        .build()
 
-                dateRangePicker.show(childFragmentManager, "")
-                dateRangePicker.addOnPositiveButtonClickListener {
-                    val timeZoneUTC = TimeZone.getDefault()
-                    val offsetFromUTC = timeZoneUTC.getOffset(Date().time) * -1
-
-                    val simpleFormat = SimpleDateFormat("MM/dd/yyyy", Locale.US)
-                    val dated = Date(it + offsetFromUTC)
-                    date = if (date1 == simpleFormat.format(dated)) {
-                        "Today"
-                    } else simpleFormat.format(dated)
+                var datatimepicker = DatePickerDialog(requireContext())
+                datatimepicker.show()
+                datatimepicker.setOnDateSetListener { view, year, month, dayOfMonth ->
+                    val mont = String.format("%02d", month + 1)
+                    val day = String.format("%02d", dayOfMonth)
+                    date = "$day.$mont.$year"
                     binding.calendar1.visibility = View.VISIBLE
                     binding.calendarDate.visibility = View.VISIBLE
                     binding.calendarDate.text = date
                 }
             }
+
             binding.alarm.setOnClickListener {
                 if (date.isNotEmpty()) {
-                    val picker =
-                        MaterialTimePicker.Builder()
-                            .setTimeFormat(TimeFormat.CLOCK_24H)
-                            .setHour(12)
-                            .setMinute(10)
-                            .build()
-                    picker.show(childFragmentManager, "tag")
-                    picker.addOnPositiveButtonClickListener {
-                        time = "${picker.hour}-${picker.minute}"
-                        binding.alarm1.visibility = View.VISIBLE
-                        binding.alarmTime.visibility = View.VISIBLE
-                        binding.alarmTime.text = time
-                    }
+                    var timepicker = TimePickerDialog(
+                        requireContext(),
+                        { view, hourOfDay, minute ->
+                            val hour1 = String.format("%02d", hourOfDay)
+                            val minute1 = String.format("%02d", minute)
+                            time = "$hour1:$minute1"
+                            binding.alarm1.visibility = View.VISIBLE
+                            binding.alarmTime.visibility = View.VISIBLE
+                            binding.alarmTime.text = time
+                        }, 24, 60, true
+                    )
+                    timepicker.show()
                 } else Toast.makeText(mContext, "please add date", Toast.LENGTH_SHORT)
                     .show()
             }
@@ -207,6 +208,10 @@ class AddTaskFragment : Fragment() {
                                 iscategory!!.category_color
                             )
                             viewModel.addTask(task)
+                            alarmController.setAlarm(
+                                "${time.substring(0, 2)}${time.substring(3)}".toInt(), date, time,
+                                binding.taskName.text.toString()
+                            )
                             findNavController().popBackStack()
                         }
                     }

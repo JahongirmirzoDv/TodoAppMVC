@@ -7,11 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp_mvc.R
+import com.example.todoapp_mvc.controller.AlarmController
 import com.example.todoapp_mvc.controller.Controller
 import com.example.todoapp_mvc.databinding.TaskItemBinding
+import com.example.todoapp_mvc.local.database.AppDatabaseBuilder
+import com.example.todoapp_mvc.local.database.DatabaseHelperImpl
 import com.example.todoapp_mvc.local.entity.TaskData
+import com.example.todoapp_mvc.utils.ViewmodelFactory
 
 class TaskAdapter(
     var context: Context,
@@ -20,16 +25,18 @@ class TaskAdapter(
     var isTodo: Boolean = false
 ) :
     RecyclerView.Adapter<TaskAdapter.Vh>() {
-    private var isclick = false
     var itemViewList = ArrayList<TaskData>()
     var selected = ArrayList<TaskData>()
     lateinit var viewModel: Controller
     var view: ImageView? = null
+    lateinit var alarmController: AlarmController
 
     inner class Vh(var itemview: TaskItemBinding) : RecyclerView.ViewHolder(itemview.root) {
         @SuppressLint("NotifyDataSetChanged")
         fun bind(taskData: TaskData) {
-//            setupViewModel()
+            setupViewModel()
+            alarmController = AlarmController(context)
+
             itemview.taskName.text = taskData.task_name
             itemview.categoryColor.setBackgroundColor(
                 context.resources.getColor(taskData.category_color!!)
@@ -45,17 +52,38 @@ class TaskAdapter(
             }
             selected.clear()
             itemview.select.setOnClickListener {
+                var isclick = true
                 itemViewList.add(taskData)
-//                onpress.onclick(itemViewList)
-                isclick = !isclick
-                if (taskData.task_complete != true) {
-                    if (isclick) {
-                        itemview.select.setImageResource(R.drawable.ic_marked)
-                        selected.add(taskData)
-                    } else {
-                        itemview.select.setImageResource(R.drawable.ic_unmarked)
-                        selected.remove(taskData)
-                    }
+                if (isclick) {
+                    itemview.select.setImageResource(R.drawable.ic_marked)
+                    selected.add(taskData)
+                    isclick = false
+                    itemview.select.isClickable = false
+                    itemview.container.alpha = 0.5f
+                    alarmController.disableAlarm(
+                        "${
+                            taskData.task_time!!.substring(
+                                0,
+                                2
+                            )
+                        }${taskData.task_time!!.substring(3)}".toInt()
+                    )
+                    viewModel.updateTask(
+                        TaskData(
+                            taskData.id,
+                            taskData.task_name,
+                            taskData.task_date,
+                            taskData.task_time,
+                            true,
+                            taskData.category_id,
+                            taskData.category,
+                            taskData.category_color
+                        )
+                    )
+                } else {
+                    itemview.select.setImageResource(R.drawable.ic_unmarked)
+                    selected.remove(taskData)
+                    isclick = true
                 }
             }
             itemview.alarm.visibility =
@@ -70,12 +98,12 @@ class TaskAdapter(
         }
     }
 
-//    private fun setupViewModel() {
-//        viewModel = ViewModelProvider(
-//            viewowner,
-//            ViewmodelFactory(DatabaseHelperImpl(AppDatabaseBuilder.getInstance(context)))
-//        )[Controller::class.java]
-//    }
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(
+            viewowner,
+            ViewmodelFactory(DatabaseHelperImpl(AppDatabaseBuilder.getInstance(context)))
+        )[Controller::class.java]
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Vh {
         var vh = Vh(TaskItemBinding.inflate((LayoutInflater.from(parent.context)), parent, false))
@@ -88,4 +116,14 @@ class TaskAdapter(
 
     override fun getItemCount(): Int = list.size
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun delete() {
+        if (selected.size != 0) {
+            for (i in selected) {
+                viewModel.deleteTask(i)
+                list.remove(i)
+                notifyDataSetChanged()
+            }
+        }
+    }
 }

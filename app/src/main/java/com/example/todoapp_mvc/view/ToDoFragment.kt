@@ -2,7 +2,6 @@ package com.example.todoapp_mvc.view
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -22,8 +21,11 @@ import com.example.todoapp_mvc.local.database.DatabaseHelperImpl
 import com.example.todoapp_mvc.local.entity.Category
 import com.example.todoapp_mvc.local.entity.TaskData
 import com.example.todoapp_mvc.utils.ViewmodelFactory
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -39,6 +41,7 @@ class ToDoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    lateinit var category: Category
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +49,12 @@ class ToDoFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        category = requireArguments().getSerializable("data") as Category
     }
 
     lateinit var binding: FragmentToDoBinding
     lateinit var viewModel: Controller
-    lateinit var category: Category
+
     lateinit var list: List<TaskData>
 
     override fun onCreateView(
@@ -61,7 +65,6 @@ class ToDoFragment : Fragment() {
         binding = FragmentToDoBinding.inflate(inflater, container, false)
         setupViewModel()
         try {
-            category = requireArguments().getSerializable("data") as Category
             workUI()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -85,12 +88,12 @@ class ToDoFragment : Fragment() {
                 var unfulfilledList = ArrayList<TaskData>()
                 var reversed = ArrayList<TaskData>()
 
-                viewModel.gettask(category.category_id!!).collect {
-                    if (it.isNotEmpty()) {
-                        list = it
+                var ll = viewModel.getbb(category.category_id!!)
+                    if (ll.isNotEmpty()) {
+                        list = ll
                         completeList.clear()
                         unfulfilledList.clear()
-                        it.map { data ->
+                        ll.map { data ->
                             if (data.task_complete == true) {
                                 completeList.add(data)
                             } else {
@@ -111,7 +114,6 @@ class ToDoFragment : Fragment() {
                         taskAdapter.notifyDataSetChanged()
                     }
                 }
-            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -189,26 +191,27 @@ class ToDoFragment : Fragment() {
                                 color
                             )
                         )
-                        GlobalScope.launch {
-                            withContext(Dispatchers.Default) {
-                                var mm = viewModel.gettask(category.category_id!!).collect {
-                                    it.map { i ->
-                                        viewModel.updateTask(
-                                            TaskData(
-                                                i.id,
-                                                i.task_name,
-                                                i.task_date,
-                                                i.task_time,
-                                                i.task_complete,
-                                                i.category_id,
-                                                i.category,
-                                                color
-                                            )
-                                        )
-                                    }
-                                }
+
+                        try {
+                            var mm = viewModel.getbb(category.category_id!!)
+                            mm.map { i ->
+                                viewModel.updateTask(
+                                    TaskData(
+                                        i.id,
+                                        i.task_name,
+                                        i.task_date,
+                                        i.task_time,
+                                        i.task_complete,
+                                        i.category_id,
+                                        i.category,
+                                        color
+                                    )
+                                )
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
+
                         binding.container.setBackgroundColor(
                             requireContext().resources.getColor(color)
                         )

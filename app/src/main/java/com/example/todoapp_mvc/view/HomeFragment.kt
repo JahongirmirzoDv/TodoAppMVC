@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -216,8 +217,10 @@ class HomeFragment : Fragment() {
                             }
 
                             override fun click(category: Category) {
+                                Log.e(TAG, "click: ")
                                 val bundle = Bundle()
                                 bundle.putSerializable("data", category)
+
                                 findNavController().navigate(R.id.toDoFragment, bundle)
                             }
                         })
@@ -246,7 +249,7 @@ class HomeFragment : Fragment() {
                     val taskAdapter =
                         TaskAdapter(mContext, requireParentFragment(), reversed)
                     binding.option.setOnClickListener {
-
+                        taskAdapter.delete()
                     }
                     binding.taskRv.adapter = taskAdapter
                     taskAdapter.notifyDataSetChanged()
