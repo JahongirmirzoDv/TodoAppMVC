@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp_mvc.R
@@ -15,17 +16,32 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 
 
 class CategoryAdapter(
-    var context: Context,
-    var tascount: ArrayList<Int>,
-    var viewowner: Fragment,
-    val list: List<Category>,
-    var isTask: Boolean = false,
-    var onpress: onPress
+
 ) :
     RecyclerView.Adapter<CategoryAdapter.Vh>() {
+    lateinit var context: Context
+    lateinit var tascount: ArrayList<Int>
+    lateinit var viewowner: Fragment
+    lateinit var list: List<Category>
+    var isTask: Boolean = false
+    lateinit var onpress: onPress
     var oldItem = -1
     var itemViewList = ArrayList<CategoryItemBinding>()
     lateinit var viewModel: Controller
+
+    constructor(
+        context: Context,
+        tascount: ArrayList<Int>,
+        list: List<Category>,
+        isTask: Boolean = false,
+        onpress: onPress
+    ) : this() {
+        this.context = context
+        this.tascount = tascount
+        this.list = list
+        this.isTask = isTask
+        this.onpress = onpress
+    }
 
     inner class Vh(var itemview: CategoryItemBinding) : RecyclerView.ViewHolder(itemview.root) {
         @OptIn(DelicateCoroutinesApi::class)

@@ -25,10 +25,7 @@ import com.example.todoapp_mvc.local.database.AppDatabaseBuilder
 import com.example.todoapp_mvc.local.database.DatabaseHelperImpl
 import com.example.todoapp_mvc.local.entity.Category
 import com.example.todoapp_mvc.local.entity.TaskData
-import com.example.todoapp_mvc.utils.SharedPref
 import com.example.todoapp_mvc.utils.ViewmodelFactory
-import java.text.SimpleDateFormat
-import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,47 +85,45 @@ class AddTaskFragment : Fragment() {
         var isclick = false
         var tasCount = ArrayList<Int>()
         var iscategory: Category? = null
+        var categoryAdapter = CategoryAdapter()
         try {
             viewModel.getCategoryList().observe(viewLifecycleOwner) {
                 it.map { categ ->
                     val getbb = viewModel.getbb(categ.category_id!!)
                     tasCount.add(getbb.size)
                 }
-                val categoryAdapter =
-                    CategoryAdapter(
-                        mContext,
-                        tasCount,
-                        requireParentFragment(),
-                        it,
-                        true,
-                        object : CategoryAdapter.onPress {
-                            override fun selected(
-                                position: Int,
-                                oldItem: Int,
-                                list: ArrayList<CategoryItemBinding>,
-                                itemview: CategoryItemBinding,
-                                category: Category
-                            ) {
-                                binding.categoryColor.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        mContext,
-                                        category.category_color!!
-                                    )
-                                )
-                                binding.categoryColor2.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        mContext,
-                                        category.category_color!!
-                                    )
-                                )
-                                binding.categoryName.text = category.category_name
-                                iscategory = category
-                            }
+                categoryAdapter.context = mContext
+                categoryAdapter.tascount = tasCount
+                categoryAdapter.list = it
+                categoryAdapter.isTask = true
+                categoryAdapter.onpress = object : CategoryAdapter.onPress {
+                    override fun selected(
+                        position: Int,
+                        oldItem: Int,
+                        list: ArrayList<CategoryItemBinding>,
+                        itemview: CategoryItemBinding,
+                        category: Category
+                    ) {
+                        binding.categoryColor.setBackgroundColor(
+                            ContextCompat.getColor(
+                                mContext,
+                                category.category_color!!
+                            )
+                        )
+                        binding.categoryColor2.setBackgroundColor(
+                            ContextCompat.getColor(
+                                mContext,
+                                category.category_color!!
+                            )
+                        )
+                        binding.categoryName.text = category.category_name
+                        iscategory = category
+                    }
 
-                            override fun click(category: Category) {
+                    override fun click(category: Category) {
 
-                            }
-                        })
+                    }
+                }
                 binding.categoryRv.adapter = categoryAdapter
                 categoryAdapter.notifyDataSetChanged()
             }
@@ -148,8 +143,6 @@ class AddTaskFragment : Fragment() {
         }
         try {
             binding.calendar.setOnClickListener {
-                val df = SimpleDateFormat("MM/dd/yyyy", Locale.US)
-                val date1 = df.format(Calendar.getInstance().time)
 
                 var datatimepicker = DatePickerDialog(requireContext())
                 datatimepicker.show()

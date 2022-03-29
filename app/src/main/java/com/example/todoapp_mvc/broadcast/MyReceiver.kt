@@ -28,7 +28,7 @@ class MyReceiver : BroadcastReceiver() {
         val notificationManager =
             context?.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val builder = NotificationCompat.Builder(context, "channelId")
-        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setSmallIcon(R.drawable.ic_icon)
         builder.setContentTitle("task should be done")
         builder.setContentText(taskName)
         builder.setSound(defaultSoundUri, AudioManager.STREAM_NOTIFICATION)

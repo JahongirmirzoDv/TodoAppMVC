@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
     android:gravity="center"
     android:orientation="vertical"
     android:paddingStart="15dp"
     android:paddingTop="15dp"
-    android:id="@+id/container"
-    android:layout_marginTop="10dp"
     android:paddingEnd="15dp">
 
     <LinearLayout
@@ -36,9 +36,9 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="15dp"
                 android:layout_weight="1"
-                android:maxLines="1"
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_pro"
+                android:maxLines="1"
                 android:text="Title"
                 android:textColor="@color/grey"
                 android:textSize="20sp"
@@ -89,16 +89,17 @@
         </LinearLayout>
 
         <androidx.cardview.widget.CardView
-            android:layout_width="13dp"
             android:id="@+id/cat"
+            android:layout_width="13dp"
             android:layout_height="13dp"
             app:cardCornerRadius="13dp"
-            app:cardElevation="0dp" >
+            app:cardElevation="0dp">
+
             <LinearLayout
-                android:background="@color/blue"
                 android:id="@+id/category_color"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/blue"
                 android:orientation="horizontal" />
         </androidx.cardview.widget.CardView>
     </LinearLayout>

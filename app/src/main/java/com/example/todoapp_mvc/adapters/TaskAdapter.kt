@@ -37,29 +37,36 @@ class TaskAdapter(
             setupViewModel()
             alarmController = AlarmController(context)
 
+
             itemview.taskName.text = taskData.task_name
             itemview.categoryColor.setBackgroundColor(
                 context.resources.getColor(taskData.category_color!!)
             )
             if (isTodo) {
                 itemview.cat.visibility = View.INVISIBLE
+                itemview.select.visibility = View.GONE
             }
+            selected.clear()
             if (taskData.task_complete == true) {
                 itemview.select.setImageResource(R.drawable.ic_marked)
-                itemview.container.alpha = 0.5f
+                selected.add(taskData)
             } else {
                 itemview.select.setImageResource(R.drawable.ic_unmarked)
             }
-            selected.clear()
             itemview.select.setOnClickListener {
                 var isclick = true
                 itemViewList.add(taskData)
+                if (isTodo) {
+                    itemview.cat.visibility = View.VISIBLE
+                    itemview.cat.setOnClickListener {
+                        delete()
+                    }
+                }
                 if (isclick) {
                     itemview.select.setImageResource(R.drawable.ic_marked)
                     selected.add(taskData)
                     isclick = false
                     itemview.select.isClickable = false
-                    itemview.container.alpha = 0.5f
                     alarmController.disableAlarm(
                         "${
                             taskData.task_time!!.substring(
@@ -94,8 +101,8 @@ class TaskAdapter(
                 if (taskData.task_time!!.isNotEmpty()) taskData.task_time else ""
             itemview.calendarDate.text =
                 if (taskData.task_date!!.isNotEmpty()) taskData.task_date else ""
-
         }
+
     }
 
     private fun setupViewModel() {

@@ -64,7 +64,8 @@
                 android:id="@+id/select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_unmarked" />
+                android:src="@drawable/ic_unmarked"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -158,8 +159,8 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="15dp"
-        android:paddingEnd="15dp"
         android:paddingTop="10dp"
+        android:paddingEnd="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider">
@@ -212,9 +213,9 @@
         android:layout_height="0dp"
         android:padding="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ln_2"
         tools:listitem="@layout/category_item" />
 

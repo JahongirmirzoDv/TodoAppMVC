@@ -32,6 +32,8 @@ import com.example.todoapp_mvc.local.entity.Category
 import com.example.todoapp_mvc.local.entity.TaskData
 import com.example.todoapp_mvc.utils.ViewmodelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -192,38 +194,37 @@ class HomeFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadUIData() {
         var tasCount = ArrayList<Int>()
+        var today = ArrayList<TaskData>()
+        var categoryAdapter = CategoryAdapter()
         try {
             viewModel.getCategoryList().observe(viewLifecycleOwner) {
                 it.map { categ ->
                     val getbb = viewModel.getbb(categ.category_id!!)
                     tasCount.add(getbb.size)
                 }
-                val categoryAdapter =
-                    CategoryAdapter(
-                        mContext,
-                        tasCount,
-                        requireParentFragment(),
-                        it,
-                        false,
-                        object : CategoryAdapter.onPress {
-                            override fun selected(
-                                position: Int,
-                                oldItem: Int,
-                                list: ArrayList<CategoryItemBinding>,
-                                itemview: CategoryItemBinding,
-                                category: Category
-                            ) {
+                categoryAdapter.context = mContext
+                categoryAdapter.tascount = tasCount
+                categoryAdapter.list = it
+                categoryAdapter.isTask = false
+                categoryAdapter.onpress = object : CategoryAdapter.onPress {
+                    override fun selected(
+                        position: Int,
+                        oldItem: Int,
+                        list: ArrayList<CategoryItemBinding>,
+                        itemview: CategoryItemBinding,
+                        category: Category
+                    ) {
 
-                            }
+                    }
 
-                            override fun click(category: Category) {
-                                Log.e(TAG, "click: ")
-                                val bundle = Bundle()
-                                bundle.putSerializable("data", category)
+                    override fun click(category: Category) {
+                        Log.e(TAG, "click: ")
+                        val bundle = Bundle()
+                        bundle.putSerializable("data", category)
 
-                                findNavController().navigate(R.id.toDoFragment, bundle)
-                            }
-                        })
+                        findNavController().navigate(R.id.toDoFragment, bundle)
+                    }
+                }
                 binding.categoryRv.adapter = categoryAdapter
                 categoryAdapter.notifyDataSetChanged()
             }
@@ -246,10 +247,19 @@ class HomeFragment : Fragment() {
                     val s = unfulfilledList.reversed()
                     reversed.addAll(s)
                     reversed.addAll(if (completeList.isNotEmpty()) completeList.reversed() else emptyList())
+                    val df = SimpleDateFormat("dd.MM.yyyy", Locale.US)
+                    val date1 = df.format(Calendar.getInstance().time)
+                    today.clear()
+                    for (i in reversed) {
+                        if (date1 == i.task_date) {
+                            today.add(i)
+                        }
+                    }
                     val taskAdapter =
-                        TaskAdapter(mContext, requireParentFragment(), reversed)
+                        TaskAdapter(mContext, requireParentFragment(), today)
                     binding.option.setOnClickListener {
                         taskAdapter.delete()
+                        categoryAdapter.notifyDataSetChanged()
                     }
                     binding.taskRv.adapter = taskAdapter
                     taskAdapter.notifyDataSetChanged()

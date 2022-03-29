@@ -14,6 +14,7 @@ class Controller(private var db: DatabaseHelper) : ViewModel() {
     private val TAG = "Controller"
     private var categoryList = MutableLiveData<List<Category>>()
     private var taskList = MutableLiveData<List<TaskData>>()
+    private var selected = MutableLiveData<ArrayList<TaskData>>()
 
     fun addCategory(category: Category) {
         db.addCategory(category)
@@ -62,11 +63,15 @@ class Controller(private var db: DatabaseHelper) : ViewModel() {
     fun getTaskByCategoryId(): List<TaskData> {
         return db.getTaskByCategoryId()
     }
+
     fun gettask(id: Int): Flow<List<TaskData>> {
         return db.gettask(id)
     }
 
-    fun getbb(id: Int): List<TaskData>{
-        return  db.getbb(id)
+    fun getbb(id: Int): List<TaskData> {
+        return db.getbb(id)
+    }
+    fun addselect(){
+//        selected.value =
     }
 }

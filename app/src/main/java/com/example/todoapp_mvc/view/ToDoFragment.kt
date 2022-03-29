@@ -104,6 +104,7 @@ class ToDoFragment : Fragment() {
                         val s = unfulfilledList.reversed()
                         reversed.addAll(s)
                         reversed.addAll(if (completeList.isNotEmpty()) completeList.reversed() else emptyList())
+
                         val taskAdapter =
                             TaskAdapter(requireContext(), requireParentFragment(), reversed, true)
                         binding.edit.setOnClickListener {
